@@ -4,6 +4,8 @@ html
     title= title
   body
     h1= message
-    form(action='/search')
-      input(type='search' name='q')
-      input(type='submit')
+    form(action='/searchArtists')
+      input(type='submit' value='search artists')
+
+    form(action='/searchTracks')
+      input(type='submit' value='search tracks')

@@ -1,12 +1,24 @@
 var routes = require('express').Router();
-var search = require('./search'); 
+var search = require('./search');
 
 routes.get('/', (req, res) => {
   res.render('index');
 });
 
-routes.get('/search', (req, res) => {
-  search.searchArtists(req, res);
+routes.get('/searchArtists', (req, res) => {
+  res.render('searchArtists');
 });
+
+routes.get('/searchTracks', (req, res) => {
+  res.render('searchTracks'); 
+});
+
+routes.get('/searchResults', (req, res) => { 
+  if (req.query.track) {
+    search.searchTracks(req, res);
+  } else { 
+    search.searchArtists(req, res);
+  }
+}); 
 
 module.exports = routes;
