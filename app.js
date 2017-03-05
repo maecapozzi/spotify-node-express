@@ -1,15 +1,17 @@
 const express = require('express'); 
 const request = require('request'); 
 const path    = require("path");
-const controllers = require('./app/controllers/routes');
+const controllers = require('./app/controllers');
 const client_id = process.env.SPOTIFY_CLIENT_ID; 
 const client_secret = process.env.SPOTIFY_SECRET;
 
 const app = express();
+
 app.use('/', controllers); 
-app.set('views', __dirname + '/views');
+app.set('views', __dirname + '/app/views');
 app.set('view engine', 'pug');
 
+//access db auth from env
 const dbUsername = process.env['DB_USERNAME']
 const dbPassword = process.env['DB_PASSWORD']
 const MongoClient = require('mongodb').MongoClient
@@ -20,12 +22,6 @@ MongoClient.connect("mongodb://" + dbUsername + ":" + dbPassword + "@ds115870.ml
 
   app.listen(3000, (err) => { 
     console.log('server is listening on 3000')
-  })
-})
-
-app.get('/', (req, res) => {  
-  res.render('home', {
-    name: 'Mae'
   })
 })
 

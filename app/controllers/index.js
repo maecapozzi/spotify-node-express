@@ -1,5 +1,5 @@
 var routes = require('express').Router();
-var search = require('./search');
+var search = require('../helpers/search');
 
 routes.get('/', (req, res) => {
   res.render('index');
