@@ -1,12 +1,12 @@
 const express = require('express'); 
 const request = require('request'); 
 const path    = require("path");
-const routes = require('./routes');
+const controllers = require('./app/controllers/routes');
 const client_id = process.env.SPOTIFY_CLIENT_ID; 
 const client_secret = process.env.SPOTIFY_SECRET;
 
 const app = express();
-app.use('/', routes); 
+app.use('/', controllers); 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'pug');
 
