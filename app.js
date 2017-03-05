@@ -2,6 +2,8 @@ const express = require('express');
 const request = require('request'); 
 const path    = require("path");
 const controllers = require('./app/controllers');
+const querystring = require('querystring');
+const cookieParser = require('cookie-parser');
 const client_id = process.env.SPOTIFY_CLIENT_ID; 
 const client_secret = process.env.SPOTIFY_SECRET;
 
@@ -16,7 +18,8 @@ const dbUsername = process.env['DB_USERNAME']
 const dbPassword = process.env['DB_PASSWORD']
 const MongoClient = require('mongodb').MongoClient
 
-MongoClient.connect("mongodb://" + dbUsername + ":" + dbPassword + "@ds115870.mlab.com:15870/skeleton-db", (err, database) => {
+ 
+MongoClient.connect("mongodb://" + dbUsername + ":" + dbPassword + "@ds119250.mlab.com:19250/spotify-node-express-db", (err, database) => {
   if (err) return console.log(err)
   db = database
 

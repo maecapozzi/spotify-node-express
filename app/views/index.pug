@@ -4,6 +4,9 @@ html
     title= title
   body
     h1= message
+    form(action='/login')
+      input(type='submit' value='login')
+
     form(action='/searchArtists')
       input(type='submit' value='search artists')
 
