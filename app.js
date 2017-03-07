@@ -12,6 +12,8 @@ const app = express();
 app.use('/', controllers); 
 app.set('views', __dirname + '/app/views');
 app.set('view engine', 'pug');
+app.use(express.static(__dirname + '/public'))
+   .use(cookieParser());
 
 //access db auth from env
 const dbUsername = process.env['DB_USERNAME']

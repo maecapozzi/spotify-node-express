@@ -1,18 +1,37 @@
 const request = require('request'); 
 const client_id = process.env.SPOTIFY_CLIENT_ID;
-const redirect_uri = "http://localhost:3000/"; 
+const redirect_uri = "https://localhost:3000/callback"; 
+const querystring = require('querystring'); 
+const cookieParser = require('cookie-parser')
+
+var generateRandomString = function(length) {
+  var text = '';
+  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+  for (var i = 0; i < length; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+};
+
+var stateKey = 'spotify_auth_state';
+
 
 module.exports = { 
   login: function(req, res) { 
-    const uri = 'https://accounts.spotify.com/authorize/?client_id=' + client_id + '& response_type=code&redirect_uri=' + redirect_uri; 
-    request.get(uri, function(error, response, body) { 
-      if (error) { 
-        res.render(error); 
-      } else { 
-        res.render('index');
-        console.log('success');
-      }
-    }); 
+    const state = generateRandomString(16);
+    res.cookie(stateKey, state);
+
+    const scope = 'user-read-private user-read-email';
+    res.redirect('https://accounts.spotify.com/authorize?' + 
+      querystring.stringify({
+        response_type: 'code', 
+        client_id: client_id, 
+        scope: scope, 
+        redirect_uri: redirect_uri, 
+        state: state
+      }) 
+    );
   }  
 }
 

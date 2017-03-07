@@ -1,5 +1,5 @@
 var routes = require('express').Router();
-var login = require('./authorization/login'); 
+var login = require('./authentication/login'); 
 var search = require('../helpers/search');
 var trackAnalysis = require('./tracks/audioAnalysis'); 
 
@@ -8,7 +8,6 @@ routes.get('/', (req, res) => {
 });
 
 routes.get('/login', (req, res) => { 
-  console.log(res);
   login.login(req, res); 
 }); 
 
