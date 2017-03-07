@@ -1,11 +1,11 @@
 doctype html 
 html
   head
-    title= title
   body
-    h1= message
+    form(action='/searchTracks')
+      input(type='submit' value='search tracks')
     form(action='/searchArtists')
       input(type='submit' value='search artists')
 
-    form(action='/searchTracks')
-      input(type='submit' value='search tracks')
+
+
