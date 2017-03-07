@@ -8,18 +8,7 @@ var client_id = process.env.SPOTIFY_CLIENT_ID;
 var client_secret = process.env.SPOTIFY_SECRET;
 var redirect_uri = 'http://localhost:3000/callback'; 
 
-var generateRandomString = function(length) {
-  var text = '';
-  var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-  for (var i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-};
-
 var stateKey = 'spotify_auth_state';
-
 
 const app = express();
 
@@ -27,18 +16,7 @@ app.use('/', controllers);
 app.set('views', __dirname + '/app/views');
 app.set('view engine', 'pug');
 app.use(express.static(__dirname + '/public'))
-   .use(cookieParser());
-
-
-app.get('/login', function(req, res) {
-
-  var state = generateRandomString(16);
-  res.cookie(stateKey, state);
-  var scope = 'user-read-private user-read-email';
-  var url = 'https://accounts.spotify.com/authorize?client_id=' + client_id + '&response_type=code&redirect_uri=http://localhost:3000/callback&scope=user-read-private&state=' + state;  
-  res.redirect(url);
-
-});
+.use(cookieParser());
 
 app.get('/callback', function(req, res) {
   // your application requests refresh and access tokens
@@ -54,6 +32,7 @@ app.get('/callback', function(req, res) {
         error: 'state_mismatch'
       }));
   } else {
+    res.render('searchPage');
     res.clearCookie(stateKey);
     var authOptions = {
       url: 'https://accounts.spotify.com/api/token',
@@ -72,7 +51,7 @@ app.get('/callback', function(req, res) {
       if (!error && response.statusCode === 200) {
 
         var access_token = body.access_token,
-            refresh_token = body.refresh_token;
+        refresh_token = body.refresh_token;
 
         var options = {
           url: 'https://api.spotify.com/v1/me',
@@ -100,6 +79,7 @@ app.get('/callback', function(req, res) {
     });
   }
 });
+
 
 app.get('/refresh_token', function(req, res) {
 
@@ -130,10 +110,10 @@ const dbUsername = process.env['DB_USERNAME']
 const dbPassword = process.env['DB_PASSWORD']
 const MongoClient = require('mongodb').MongoClient
 
- 
+
 MongoClient.connect("mongodb://" + dbUsername + ":" + dbPassword + "@ds119250.mlab.com:19250/spotify-node-express-db", (err, database) => {
   if (err) return console.log(err)
-  db = database
+    db = database
 
   app.listen(3000, (err) => { 
     console.log('server is listening on 3000')
