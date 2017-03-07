@@ -7,10 +7,6 @@ routes.get('/', (req, res) => {
   res.render('index');
 });
 
-routes.get('/login', (req, res) => { 
-  login.login(req, res); 
-}); 
-
 routes.get('/searchArtists', (req, res) => {
   res.render('searchArtists');
 });

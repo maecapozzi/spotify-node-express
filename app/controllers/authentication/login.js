@@ -1,6 +1,5 @@
 const request = require('request'); 
-const client_id = process.env.SPOTIFY_CLIENT_ID;
-const redirect_uri = "https://localhost:3000/callback"; 
+const client_id = process.env.SPOTIFY_CLIENT_ID; 
 const querystring = require('querystring'); 
 const cookieParser = require('cookie-parser')
 
@@ -18,21 +17,21 @@ var stateKey = 'spotify_auth_state';
 
 
 module.exports = { 
-  login: function(req, res) { 
-    const state = generateRandomString(16);
-    res.cookie(stateKey, state);
+  // login: function(req, res) { 
+  //   const state = generateRandomString(16);
+  //   res.cookie(stateKey, state);
 
-    const scope = 'user-read-private user-read-email';
-    res.redirect('https://accounts.spotify.com/authorize?' + 
-      querystring.stringify({
-        response_type: 'code', 
-        client_id: client_id, 
-        scope: scope, 
-        redirect_uri: redirect_uri, 
-        state: state
-      }) 
-    );
-  }  
+  //   const scope = 'user-read-private user-read-email';
+  //   res.redirect('https://accounts.spotify.com/authorize?' + 
+  //     querystring.stringify({
+  //       response_type: 'code', 
+  //       client_id: client_id, 
+  //       scope: scope, 
+  //       redirect_uri: redirect_uri, 
+  //       state: state
+  //     }) 
+  //   );
+  // }  
 }
 
 
