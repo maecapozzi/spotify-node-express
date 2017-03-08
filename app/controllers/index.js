@@ -16,7 +16,6 @@ routes.get('/', (req, res) => {
 
 routes.get('/login', function(req, res) {
   const state = authHelpers.generateRandomString(16);
-  console.log(state);
   res.cookie(stateKey, state);
   const scope = 'user-read-private user-read-email'; 
 
@@ -42,11 +41,14 @@ routes.get('/searchTracks', (req, res) => {
 
 routes.get('/searchResults', (req, res) => { 
   if (req.query.track) {
-    search.searchTracks(req, res);
-    trackAnalysis.analyzeTrack(req, res); 
+    search.searchTracks(req, res); 
   } else { 
     search.searchArtists(req, res);
   }
+}); 
+
+routes.get('/analyze', (req, res) => { 
+  trackAnalysis.analyzeTrack(req, res);
 }); 
 
 module.exports = routes;

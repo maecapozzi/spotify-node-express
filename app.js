@@ -7,6 +7,8 @@ var cookieParser = require('cookie-parser');
 var client_id = process.env.SPOTIFY_CLIENT_ID;
 var client_secret = process.env.SPOTIFY_SECRET;
 var redirect_uri = 'http://localhost:3000/callback'; 
+var LocalStorage = require('node-localstorage').LocalStorage;
+localStorage = new LocalStorage('./localStorage')
 
 var stateKey = 'spotify_auth_state';
 
@@ -32,7 +34,6 @@ app.get('/callback', function(req, res) {
         error: 'state_mismatch'
       }));
   } else {
-    res.render('searchPage');
     res.clearCookie(stateKey);
     var authOptions = {
       url: 'https://accounts.spotify.com/api/token',
@@ -52,6 +53,8 @@ app.get('/callback', function(req, res) {
 
         var access_token = body.access_token,
         refresh_token = body.refresh_token;
+
+        localStorage.setItem('access_token', access_token); 
 
         var options = {
           url: 'https://api.spotify.com/v1/me',
@@ -82,7 +85,6 @@ app.get('/callback', function(req, res) {
 
 
 app.get('/refresh_token', function(req, res) {
-
   // requesting access token from refresh token
   var refresh_token = req.query.refresh_token;
   var authOptions = {
@@ -96,6 +98,7 @@ app.get('/refresh_token', function(req, res) {
   };
 
   request.post(authOptions, function(error, response, body) {
+    console.log(body);
     if (!error && response.statusCode === 200) {
       var access_token = body.access_token;
       res.send({

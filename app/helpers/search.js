@@ -1,4 +1,5 @@
 const request = require('request'); 
+const analyzer = require('../controllers/tracks/audioAnalysis')
 
 module.exports = { 
   searchArtists: function(req, res) { 
@@ -24,7 +25,9 @@ module.exports = {
       } else{
         const track = JSON.parse(response.body).tracks.items[0]; 
         const artist = track.artists[0].name;
-        res.render('searchResults', { name: artist });
+        const id = track.artists[0].id;
+        analyzer.analyzeTrack(req, res, id); 
+        res.render('searchResults', { name: artist});
       }
     });
   }
