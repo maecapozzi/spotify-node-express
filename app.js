@@ -1,8 +1,5 @@
 require('dotenv').config()
 
-const LocalStorage = require('node-localstorage').LocalStorage
-localStorage = new LocalStorage('./localStorage')
-
 const express = require('express')
 const request = require('request')
 const path = require("path")
@@ -13,6 +10,9 @@ const client_id = process.env.SPOTIFY_CLIENT_ID
 const client_secret = process.env.SPOTIFY_SECRET
 const redirect_uri = 'http://localhost:3000/callback'
 const stateKey = 'spotify_auth_state'
+
+let LocalStorage = require('node-localstorage').LocalStorage
+localStorage = new LocalStorage('./localStorage')
 
 const app = express()
 
