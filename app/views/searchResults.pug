@@ -3,10 +3,6 @@ html
   head
     title= Search
   body
-    h1= name
-    h1= popularity
-    h1= followerSize
-    h1= ratio
-
-
-    a(href='/analyze') Analyze Track
+  for item in results
+    a(href='/analyze/' + item.id)= item.name
+    li= item.artists[0].name

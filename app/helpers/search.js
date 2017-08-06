@@ -7,7 +7,7 @@ module.exports = {
     request.get(uri, function(error, response, body){
       if (error){
         res.render(error);
-      } else{
+      } else {
         const artist = JSON.parse(response.body).artists.items[0];
         const name = artist.name;
         const popularity = artist.popularity;
@@ -18,16 +18,22 @@ module.exports = {
   },
 
   searchTracks: function(req, res) {
-    const uri = "https://api.spotify.com/v1/search?q="+ req.query.track + "&type=track";
-    request.get(uri, function(error, response, body){
+    const access_token = localStorage.getItem('access_token')
+    const options = {
+      url: "https://api.spotify.com/v1/search?q="+ req.query.track + "&type=track",
+      headers: { 'Authorization': 'Bearer ' + access_token },
+      json: true
+    }
+
+    request.get(options, function(error, response, body){
       if (error){
         res.render(error);
-      } else{
-        const track = JSON.parse(response.body).tracks.items[0];
-        const artist = track.artists[0].name;
-        const id = track.artists[0].id;
-        analyzer.analyzeTrack(req, res, id);
-        res.render('searchResults', { name: artist});
+      } else {
+        const results = []
+        response.body.tracks.items.forEach((item) => {
+          results.push(item)
+        })
+        res.render('searchResults', { results: results } )
       }
     });
   }

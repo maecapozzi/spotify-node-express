@@ -9,6 +9,7 @@ const client_secret = process.env.SPOTIFY_SECRET
 const redirect_uri = 'http://localhost:3000/callback'
 const stateKey = 'spotify_auth_state'
 const request = require('request')
+const trackAnalysis = require('./tracks/audioAnalysis')
 
 routes.get('/', (req, res) => {
   res.render('index')
@@ -30,20 +31,6 @@ routes.get('/login', (req, res) => {
   )
 })
 
-routes.get('/search', (req, res) => {
-  const access_token = localStorage.getItem('access_token')
-  query = "sprained&20ankle"
-  const options = {
-    url: 'https://api.spotify.com/v1/search?q=' + query + '&' + 'type=track',
-    headers: { 'Authorization': 'Bearer ' + access_token },
-    json: true
-  }
-
-  request.get(options, (error, response, body) => {
-    console.log(body)
-  })
-})
-
 routes.get('/profile', (req, res) => {
   const access_token = localStorage.getItem('access_token')
   const options = {
@@ -57,34 +44,22 @@ routes.get('/profile', (req, res) => {
   })
 })
 
-routes.get('/albums', (req, res) => {
-  const access_token = localStorage.getItem('access_token')
-  const options = {
-    url: 'https://api.spotify.com/v1/albums/0sNOF9WDwhWunNAHPD3Baj',
-    headers: { 'Authorization': 'Bearer ' + access_token },
-    json: true
-  }
-
-  request.get(options, (error, response, body) => {
-    res.send(JSON.stringify(body.artists[0].name))
-  })
-})
-
-routes.get('/searchTracks', (req, res) => {
-  res.render('searchTracks');
-});
-
-routes.get('/searchResults', (req, res) => {
+routes.get('/search', (req, res) => {
   if (req.query.track) {
     search.searchTracks(req, res);
   } else {
     search.searchArtists(req, res);
   }
-});
+})
 
-routes.get('/analyze', (req, res) => {
-  trackAnalysis.analyzeTrack(req, res);
-});
+routes.get('/analyze/:id', (req, res) => {
+  const id = req.params.id
+  trackAnalysis.analyzeTrack(req, res, id);
+})
+
+routes.get('/tracks/:id', (req, res) => {
+  res.render()
+})
 
 
 module.exports = routes
