@@ -1,5 +1,6 @@
 const routes = require('express').Router()
 const login = require('./authentication/login')
+const search = require('../helpers/search')
 const authHelpers = require('../helpers/authentication')
 const cookieParser = require('cookie-parser')
 const querystring = require('querystring')
@@ -70,7 +71,7 @@ routes.get('/albums', (req, res) => {
 })
 
 routes.get('/searchTracks', (req, res) => {
-  res.render('searchTracks'); 
+  res.render('searchTracks');
 });
 
 routes.get('/searchResults', (req, res) => {
