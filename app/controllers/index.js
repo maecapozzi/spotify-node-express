@@ -39,8 +39,7 @@ routes.get('/search', (req, res) => {
   }
 
   request.get(options, (error, response, body) => {
-    const items = body.tracks.items
-    res.send(JSON.stringify(items[0].id))
+    console.log(body)
   })
 })
 
