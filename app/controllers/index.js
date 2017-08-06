@@ -69,4 +69,21 @@ routes.get('/albums', (req, res) => {
   })
 })
 
+routes.get('/searchTracks', (req, res) => {
+  res.render('searchTracks'); 
+});
+
+routes.get('/searchResults', (req, res) => {
+  if (req.query.track) {
+    search.searchTracks(req, res);
+  } else {
+    search.searchArtists(req, res);
+  }
+});
+
+routes.get('/analyze', (req, res) => {
+  trackAnalysis.analyzeTrack(req, res);
+});
+
+
 module.exports = routes
