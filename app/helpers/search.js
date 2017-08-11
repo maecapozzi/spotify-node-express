@@ -1,4 +1,4 @@
-const request = require('request');
+const request = require('request')
 const analyzer = require('../controllers/tracks/audioAnalysis')
 
 //TODO: use bodyParser instead of JSON.parse
@@ -14,7 +14,7 @@ module.exports = {
 
     request.get(options, function(error, response, body){
       if (error){
-        res.render(error);
+        res.render(error)
       } else {
         const results = []
         response.body.tracks.items.forEach((item) => {
@@ -22,6 +22,6 @@ module.exports = {
         })
         res.render('searchResults', { results: results } )
       }
-    });
+    })
   }
 }

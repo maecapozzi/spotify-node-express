@@ -46,15 +46,15 @@ routes.get('/profile', (req, res) => {
 
 routes.get('/search', (req, res) => {
   if (req.query.track) {
-    search.searchTracks(req, res);
+    search.searchTracks(req, res)
   } else {
-    search.searchArtists(req, res);
+    search.searchArtists(req, res)
   }
 })
 
 routes.get('/analyze/:id', (req, res) => {
   const id = req.params.id
-  trackAnalysis.analyzeTrack(req, res, id);
+  trackAnalysis.analyzeTrack(req, res, id)
 })
 
 routes.get('/tracks/:id', (req, res) => {
