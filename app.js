@@ -8,8 +8,9 @@ const querystring = require('querystring')
 const cookieParser = require('cookie-parser')
 const client_id = process.env.SPOTIFY_CLIENT_ID
 const client_secret = process.env.SPOTIFY_SECRET
-const redirect_uri = 'http://localhost:3000/callback'
+const redirect_uri = 'http://localhost:3001/callback'
 const stateKey = 'spotify_auth_state'
+const cors = require('cors')
 
 let LocalStorage = require('node-localstorage').LocalStorage
 localStorage = new LocalStorage('./localStorage')
@@ -117,8 +118,8 @@ MongoClient.connect("mongodb://" + dbUsername + ":" + dbPassword + "@ds121171.ml
   if (err) return console.log(err)
     db = database
 
-  app.listen(3000, (err) => {
-    console.log('server is listening on 3000')
+  app.listen(3001, (err) => {
+    console.log('server is listening on 3001')
   })
 })
 

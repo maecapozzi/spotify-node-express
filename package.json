@@ -25,6 +25,7 @@
     "string_decoder": "^1.0.3"
   },
   "devDependencies": {
+    "cors": "^2.8.4",
     "nodemon": "^1.11.0"
   }
 }

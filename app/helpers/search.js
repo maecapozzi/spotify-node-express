@@ -4,7 +4,7 @@ const analyzer = require('../controllers/tracks/audioAnalysis')
 //TODO: use bodyParser instead of JSON.parse
 
 module.exports = {
-  searchTracks: function(req, res) {
+  searchTracks: (req, res) => {
     const access_token = localStorage.getItem('access_token')
     const options = {
       url: "https://api.spotify.com/v1/search?q="+ req.query.track + "&type=track",
@@ -20,7 +20,7 @@ module.exports = {
         response.body.tracks.items.forEach((item) => {
           results.push(item)
         })
-        res.render('searchResults', { results: results } )
+        res.send({ results: results })
       }
     })
   }

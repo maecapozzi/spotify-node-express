@@ -6,12 +6,13 @@ const cookieParser = require('cookie-parser')
 const querystring = require('querystring')
 const client_id = process.env.SPOTIFY_CLIENT_ID
 const client_secret = process.env.SPOTIFY_SECRET
-const redirect_uri = 'http://localhost:3000/callback'
+const redirect_uri = 'http://localhost:3001/callback'
 const stateKey = 'spotify_auth_state'
 const request = require('request')
 const trackAnalysis = require('./tracks/audioAnalysis')
+const cors = require('cors')
 
-routes.get('/', (req, res) => {
+routes.get('/', cors(), (req, res) => {
   res.render('index')
 })
 
@@ -44,7 +45,7 @@ routes.get('/profile', (req, res) => {
   })
 })
 
-routes.get('/search', (req, res) => {
+routes.get('/search', cors(), (req, res) => {
   if (req.query.track) {
     search.searchTracks(req, res)
   } else {
