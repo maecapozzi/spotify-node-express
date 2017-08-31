@@ -2,13 +2,12 @@ require('dotenv').config()
 
 const express = require('express')
 const request = require('request')
-const path = require("path")
 const controllers = require('./app/controllers')
 const querystring = require('querystring')
 const cookieParser = require('cookie-parser')
-const client_id = process.env.SPOTIFY_CLIENT_ID
-const client_secret = process.env.SPOTIFY_SECRET
-const redirect_uri = 'http://localhost:3001/callback'
+const clientId = process.env.SPOTIFY_CLIENT_ID
+const clientSecret = process.env.SPOTIFY_SECRET
+const redirectUri = 'http://localhost:3001/callback'
 const stateKey = 'spotify_auth_state'
 const cors = require('cors')
 
@@ -41,11 +40,11 @@ app.get('/callback', function(req, res) {
       url: 'https://accounts.spotify.com/api/token',
       form: {
         code: code,
-        redirect_uri: redirect_uri,
+        redirect_uri: redirectUri,
         grant_type: 'authorization_code'
       },
       headers: {
-        'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+        'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
       },
       json: true
     }
@@ -91,7 +90,7 @@ app.get('/refresh_token', function(req, res) {
   const refresh_token = req.query.refresh_token
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
-    headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+    headers: { 'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64')) },
     form: {
       grant_type: 'refresh_token',
       refresh_token: refresh_token
@@ -114,7 +113,7 @@ const dbUsername = process.env.SPOTIFY_DB_USERNAME
 const dbPassword = process.env.SPOTIFY_DB_PASSWORD
 const MongoClient = require('mongodb').MongoClient
 
-MongoClient.connect("mongodb://" + dbUsername + ":" + dbPassword + "@ds121171.mlab.com:21171/spotify-node-express", (err, database) => {
+MongoClient.connect('mongodb://' + dbUsername + ':' + dbPassword + '@ds121171.mlab.com:21171/spotify-node-express', (err, database) => {
   if (err) return console.log(err)
     db = database
 
