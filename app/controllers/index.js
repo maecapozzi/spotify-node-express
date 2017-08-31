@@ -1,22 +1,22 @@
+const authHelpers = require('../helpers/authentication')
+const cors = require('cors')
 const routes = require('express').Router()
 const search = require('../helpers/search')
-const authHelpers = require('../helpers/authentication')
-const querystring = require('querystring')
-const clientId = process.env.SPOTIFY_CLIENT_ID
-const redirectUri = 'http://localhost:3001/callback'
-const stateKey = 'spotify_auth_state'
-const request = require('request')
 const trackAnalysis = require('./tracks/audioAnalysis')
-const cors = require('cors')
+const querystring = require('querystring')
 
 routes.get('/', cors(), (req, res) => {
   res.render('index')
 })
 
 routes.get('/login', (req, res) => {
+  const clientId = process.env.SPOTIFY_CLIENT_ID
+  const redirectUri = 'http://localhost:3001/callback'
+  const stateKey = 'spotify_auth_state'
   const state = authHelpers.generateRandomString(16)
-  res.cookie(stateKey, state)
   const scope = 'user-read-private user-read-email'
+
+  res.cookie(stateKey, state)
 
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
@@ -30,11 +30,7 @@ routes.get('/login', (req, res) => {
 })
 
 routes.get('/search', cors(), (req, res) => {
-  if (req.query.track) {
-    search.searchTracks(req, res)
-  } else {
-    search.searchArtists(req, res)
-  }
+  search.searchTracks(req, res)
 })
 
 routes.get('/analyze/:id', (req, res) => {

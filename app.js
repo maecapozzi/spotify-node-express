@@ -7,9 +7,6 @@ const querystring = require('querystring')
 const cookieParser = require('cookie-parser')
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const clientSecret = process.env.SPOTIFY_SECRET
-const redirectUri = 'http://localhost:3001/callback'
-const stateKey = 'spotify_auth_state'
-const cors = require('cors')
 
 let LocalStorage = require('node-localstorage').LocalStorage
 localStorage = new LocalStorage('./localStorage')
@@ -20,70 +17,68 @@ app.use('/', controllers)
 app.set('views', __dirname + '/app/views')
 app.set('view engine', 'pug')
 app.use(express.static(__dirname + '/public'))
-.use(cookieParser())
+  .use(cookieParser())
 
 app.get('/callback', function(req, res) {
-  // your application requests refresh and access tokens
-  // after checking the state parameter
-  const code = req.query.code || null
-  const state = req.query.state || null
-  const storedState = req.cookies ? req.cookies[stateKey] : null
+  const stateKey = 'spotify_auth_state',
+    state = req.query.state || null,
+    storedState = req.cookies ? req.cookies[stateKey] : null
 
   if (state === null || state !== storedState) {
     res.redirect('/#' +
       querystring.stringify({
         error: 'state_mismatch'
-      }))
+      })
+    )
   } else {
     res.clearCookie(stateKey)
-    const authOptions = {
-      url: 'https://accounts.spotify.com/api/token',
-      form: {
-        code: code,
-        redirect_uri: redirectUri,
-        grant_type: 'authorization_code'
-      },
-      headers: {
-        'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
-      },
-      json: true
-    }
-
-    request.post(authOptions, function(error, response, body) {
-      if (!error && response.statusCode === 200) {
-
-        const access_token = body.access_token,
-        refresh_token = body.refresh_token
-
-        localStorage.setItem('access_token', access_token)
-
-        const options = {
-          url: 'https://api.spotify.com/v1/me',
-          headers: { 'Authorization': 'Bearer ' + access_token },
-          json: true
-        }
-
-        // use the access token to access the Spotify Web API
-        request.get(options, function(error, response, body) {
-          console.log(options)
-          console.log(body)
-        })
-
-        // we can also pass the token to the browser to make requests from there
-        res.redirect('/#' +
-          querystring.stringify({
-            access_token: access_token,
-            refresh_token: refresh_token
-          }))
-      } else {
-        res.redirect('/#' +
-          querystring.stringify({
-            error: 'invalid_token'
-          }))
-      }
-    })
+    requestTokensFromSpotify(req, res)
   }
 })
+
+const setTokens = (body, res) => {
+  const access_token = body.access_token,
+    refresh_token = body.refresh_token
+
+  localStorage.setItem('access_token', access_token)
+
+  res.redirect('/#' +
+    querystring.stringify({
+      access_token: access_token,
+      refresh_token: refresh_token
+    })
+  )
+}
+
+const requestTokensFromSpotify = (req, res) => {
+  const code = req.query.code || null,
+    redirectUri = 'http://localhost:3001/callback'
+
+  const authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    form: {
+      code: code,
+      redirect_uri: redirectUri,
+      grant_type: 'authorization_code'
+    },
+    headers: {
+      'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
+    },
+    json: true
+  }
+
+  request.post(authOptions, function(error, response, body) {
+    if (!error && response.statusCode === 200) {
+      setTokens(body, res)
+    } else {
+      res.redirect('/#' +
+        querystring.stringify({
+          error: 'invalid_token'
+        })
+      )
+    }
+  })
+}
 
 app.get('/refresh_token', function(req, res) {
   // requesting access token from refresh token
@@ -113,11 +108,13 @@ const dbUsername = process.env.SPOTIFY_DB_USERNAME
 const dbPassword = process.env.SPOTIFY_DB_PASSWORD
 const MongoClient = require('mongodb').MongoClient
 
-MongoClient.connect('mongodb://' + dbUsername + ':' + dbPassword + '@ds121171.mlab.com:21171/spotify-node-express', (err, database) => {
+MongoClient.connect('mongodb://' + dbUsername + ':' + dbPassword + '@ds121171.mlab.com:21171/spotify-node-express', (err) => {
   if (err) return console.log(err)
-    db = database
 
   app.listen(3001, (err) => {
+    if (err) {
+      console.log('something is broken')
+    }
     console.log('server is listening on 3001')
   })
 })
