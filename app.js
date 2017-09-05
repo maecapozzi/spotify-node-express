@@ -19,7 +19,7 @@ app.set('view engine', 'pug')
 app.use(express.static(__dirname + '/public'))
   .use(cookieParser())
 
-app.get('/callback', function(req, res) {
+app.get('/callback', function (req, res) {
   const stateKey = 'spotify_auth_state',
     state = req.query.state || null,
     storedState = req.cookies ? req.cookies[stateKey] : null
@@ -67,7 +67,7 @@ const requestTokensFromSpotify = (req, res) => {
     json: true
   }
 
-  request.post(authOptions, function(error, response, body) {
+  request.post(authOptions, function (error, response, body) {
     if (!error && response.statusCode === 200) {
       setTokens(body, res)
     } else {
@@ -80,7 +80,7 @@ const requestTokensFromSpotify = (req, res) => {
   })
 }
 
-app.get('/refresh_token', function(req, res) {
+app.get('/refresh_token', function (req, res) {
   // requesting access token from refresh token
   const refresh_token = req.query.refresh_token
   const authOptions = {
@@ -93,7 +93,7 @@ app.get('/refresh_token', function(req, res) {
     json: true
   }
 
-  request.post(authOptions, function(error, response, body) {
+  request.post(authOptions, function (error, response, body) {
     if (!error && response.statusCode === 200) {
       const access_token = body.access_token
       res.send({
@@ -103,7 +103,7 @@ app.get('/refresh_token', function(req, res) {
   })
 })
 
-//access db auth from env
+// access db auth from env
 const dbUsername = process.env.SPOTIFY_DB_USERNAME
 const dbPassword = process.env.SPOTIFY_DB_PASSWORD
 const MongoClient = require('mongodb').MongoClient

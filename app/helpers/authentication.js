@@ -1,5 +1,5 @@
 module.exports = {
-  generateRandomString: function(length) {
+  generateRandomString: function (length) {
     let text = ''
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 
