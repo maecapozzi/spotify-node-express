@@ -20,9 +20,9 @@ app.use(express.static(__dirname + '/public'))
   .use(cookieParser())
 
 app.get('/callback', function (req, res) {
-  const stateKey = 'spotify_auth_state',
-    state = req.query.state || null,
-    storedState = req.cookies ? req.cookies[stateKey] : null
+  const stateKey = 'spotify_auth_state'
+  const state = req.query.state || null
+  const storedState = req.cookies ? req.cookies[stateKey] : null
 
   if (state === null || state !== storedState) {
     res.redirect('/#' +
@@ -37,8 +37,8 @@ app.get('/callback', function (req, res) {
 })
 
 const setTokens = (body, res) => {
-  const access_token = body.access_token,
-    refresh_token = body.refresh_token
+  const access_token = body.access_token
+  const refresh_token = body.refresh_token
 
   localStorage.setItem('access_token', access_token)
 
@@ -51,8 +51,8 @@ const setTokens = (body, res) => {
 }
 
 const requestTokensFromSpotify = (req, res) => {
-  const code = req.query.code || null,
-    redirectUri = 'http://localhost:3001/callback'
+  const code = req.query.code || null
+  const redirectUri = 'http://localhost:3001/callback'
 
   const authOptions = {
     url: 'https://accounts.spotify.com/api/token',
