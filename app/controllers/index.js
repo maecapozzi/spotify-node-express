@@ -33,7 +33,7 @@ routes.get('/search', cors(), (req, res) => {
   search.searchTracks(req, res)
 })
 
-routes.get('/analyze/:id', (req, res) => {
+routes.get('/analyze/:id', cors(), (req, res) => {
   const id = req.params.id
   trackAnalysis.analyzeTrack(req, res, id)
 })
