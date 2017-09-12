@@ -13,14 +13,13 @@ module.exports = {
 
     request.get(options, (error, response) => {
       if (error) {
-        res.render(error)
+        res.status(500)
       } else {
         const results = []
         response.body.tracks.items.forEach((item) => {
           results.push(item)
         })
         res.send({ results: results })
-        console.log(results)
       }
     })
   }

@@ -1,8 +1,0 @@
-doctype html
-html
-  head
-    title= Search
-  body
-  for item in results
-    a(href='/analyze/' + item.id)= item.name
-    li= item.artists[0].name

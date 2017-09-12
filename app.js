@@ -7,6 +7,7 @@ const querystring = require('querystring')
 const cookieParser = require('cookie-parser')
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const clientSecret = process.env.SPOTIFY_SECRET
+const cors = require('cors')
 
 let LocalStorage = require('node-localstorage').LocalStorage
 localStorage = new LocalStorage('./localStorage')
@@ -19,7 +20,7 @@ app.set('view engine', 'pug')
 app.use(express.static(__dirname + '/public'))
   .use(cookieParser())
 
-app.get('/callback', function (req, res) {
+app.get('/callback', cors(), function (req, res) {
   const stateKey = 'spotify_auth_state'
   const state = req.query.state || null
   const storedState = req.cookies ? req.cookies[stateKey] : null
@@ -41,6 +42,7 @@ const setTokens = (body, res) => {
   const refresh_token = body.refresh_token
 
   localStorage.setItem('access_token', access_token)
+  localStorage.setItem('refresh_token', refresh_token)
 
   res.redirect('/#' +
     querystring.stringify({
@@ -71,6 +73,7 @@ const requestTokensFromSpotify = (req, res) => {
     if (!error && response.statusCode === 200) {
       setTokens(body, res)
     } else {
+      console.log('failure')
       res.redirect('/#' +
         querystring.stringify({
           error: 'invalid_token'
@@ -79,29 +82,6 @@ const requestTokensFromSpotify = (req, res) => {
     }
   })
 }
-
-app.get('/refresh_token', function (req, res) {
-  // requesting access token from refresh token
-  const refresh_token = req.query.refresh_token
-  const authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: { 'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64')) },
-    form: {
-      grant_type: 'refresh_token',
-      refresh_token: refresh_token
-    },
-    json: true
-  }
-
-  request.post(authOptions, function (error, response, body) {
-    if (!error && response.statusCode === 200) {
-      const access_token = body.access_token
-      res.send({
-        'access_token': access_token
-      })
-    }
-  })
-})
 
 // access db auth from env
 const dbUsername = process.env.SPOTIFY_DB_USERNAME
@@ -119,5 +99,4 @@ MongoClient.connect('mongodb://' + dbUsername + ':' + dbPassword + '@ds121171.ml
   })
 })
 
-console.log('Listening on 8888')
-app.listen(8888)
+module.exports = app
