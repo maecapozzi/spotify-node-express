@@ -28,8 +28,6 @@ passport.use(new SpotifyStrategy({
   callbackURL: 'http://localhost:3001/callback'
 },
   (accessToken, refreshToken, profile, done) => {
-    console.log(accessToken)
-    console.log(refreshToken)
     // asynchronous verification, for effect...
     process.nextTick(function () {
       return done(null, profile)
@@ -46,11 +44,13 @@ app.use(express.static(__dirname + '/public'))
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.get('/login', cors(), (res, req) => {
+})
+
 app.get('/auth/spotify',
   passport.authenticate('spotify', {
     scope: ['user-read-email', 'user-read-private'], showDialog: true
   }), (req, res) => {
-
   })
 
 app.get('/callback',
