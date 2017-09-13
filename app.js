@@ -37,17 +37,57 @@ app.get('/callback', cors(), function (req, res) {
   }
 })
 
-const setTokens = (body, res) => {
-  const access_token = body.access_token
-  const refresh_token = body.refresh_token
+app.get('/refreshToken', cors(), function (req, res) {
+  const refreshToken = localStorage.getItem('refresh_token')
+  console.log(refreshToken)
+  const authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    form: {
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token'
+    },
+    headers: {
+      'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
+    },
+    json: true
+  }
 
-  localStorage.setItem('access_token', access_token)
-  localStorage.setItem('refresh_token', refresh_token)
+  request.post(authOptions, function (error, response, body) {
+    if (!error && response.statusCode === 200) {
+      const accessToken = body.access_token
+      const refreshToken = body.refresh_token
+
+      localStorage.setItem('access_token', accessToken)
+
+      res.redirect('/#' +
+        querystring.stringify({
+          access_token: accessToken,
+          refresh_token: refreshToken
+        })
+      )
+    } else {
+      res.redirect('/#' +
+        querystring.stringify({
+          error: 'invalid_token'
+        })
+      )
+    }
+  })
+})
+
+const setTokens = (body, res) => {
+  const accessToken = body.access_token
+  const refreshToken = body.refresh_token
+  const expiresIn = body.expires_in
+
+  localStorage.setItem('access_token', accessToken)
+  localStorage.setItem('expires_in', expiresIn)
+  localStorage.setItem('refresh_token', refreshToken)
 
   res.redirect('/#' +
     querystring.stringify({
-      access_token: access_token,
-      refresh_token: refresh_token
+      access_token: accessToken,
+      refresh_token: refreshToken
     })
   )
 }

@@ -34,7 +34,7 @@ describe('GET /login', () => {
 })
 
 describe('GET /search', () => {
-  it('should return 200', () => (
+  it('should return 200 if authenticated', () => (
     chai.request(app)
       .get('/search?&track=despacito')
       .then((res) => {
@@ -63,19 +63,6 @@ describe('GET /callback', () => {
   it('should return 200', () => (
     chai.request(app)
       .get('/callback')
-      .then((res) => {
-        expect(res).to.have.status(200)
-      })
-      .catch((err) => {
-        throw err
-      })
-  ))
-})
-
-describe('GET /refresh_token', () => {
-  it('should return 200', () => (
-    chai.request(app)
-      .get('/refresh_token')
       .then((res) => {
         expect(res).to.have.status(200)
       })
