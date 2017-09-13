@@ -6,13 +6,12 @@ const expect = chai.expect
 
 chai.use(chaiHttp)
 
-describe('GET /', () => {
-  it('should return HTML', () => (
+describe('GET /auth/spotify', () => {
+  it('should return 200', () => (
     chai.request(app)
-      .get('/')
+      .get('/auth/spotify')
       .then((res) => {
         expect(res).to.have.status(200)
-        expect(res).to.be.html
       })
       .catch((err) => {
         throw err
@@ -20,10 +19,10 @@ describe('GET /', () => {
   ))
 })
 
-describe('GET /login', () => {
+describe('GET /callback', () => {
   it('should return 200', () => (
     chai.request(app)
-      .get('/login')
+      .get('/search?&track=despacito')
       .then((res) => {
         expect(res).to.have.status(200)
       })
@@ -50,19 +49,6 @@ describe('GET /analyze/:id', () => {
   it('should return 200', () => (
     chai.request(app)
       .get('/analyze/0sNOF9WDwhWunNAHPD3Baj')
-      .then((res) => {
-        expect(res).to.have.status(200)
-      })
-      .catch((err) => {
-        throw err
-      })
-  ))
-})
-
-describe('GET /callback', () => {
-  it('should return 200', () => (
-    chai.request(app)
-      .get('/callback')
       .then((res) => {
         expect(res).to.have.status(200)
       })

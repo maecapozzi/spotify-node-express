@@ -16,7 +16,7 @@ module.exports = {
         res.status(500)
       } else {
         const results = []
-        response.body.tracks.items.forEach((item) => {
+        response.body.tracks.items.map((item) => {
           results.push(item)
         })
         res.send({ results: results })

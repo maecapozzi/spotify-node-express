@@ -1,18 +1,14 @@
 require('dotenv').config()
 
-const express = require('express')
-const request = require('request')
-const controllers = require('./app/controllers')
-const querystring = require('querystring')
-const cookieParser = require('cookie-parser')
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const clientSecret = process.env.SPOTIFY_SECRET
-const cors = require('cors')
-const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
+const controllers = require('./app/controllers')
+const cookieParser = require('cookie-parser')
+const express = require('express')
 const passport = require('passport')
-
 let LocalStorage = require('node-localstorage').LocalStorage
 localStorage = new LocalStorage('./localStorage')
+const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
 
 passport.serializeUser(function (user, done) {
   done(null, user)
@@ -25,10 +21,12 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new SpotifyStrategy({
   clientID: clientId,
   clientSecret: clientSecret,
-  callbackURL: 'http://localhost:3001/callback'
+  callbackURL: 'http://localhost:3000/callback'
 },
   (accessToken, refreshToken, profile, done) => {
-    // asynchronous verification, for effect...
+    localStorage.setItem('access_token', accessToken)
+    localStorage.setItem('refresh_token', refreshToken)
+
     process.nextTick(function () {
       return done(null, profile)
     })
@@ -44,27 +42,6 @@ app.use(express.static(__dirname + '/public'))
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.get('/login', cors(), (res, req) => {
-})
-
-app.get('/auth/spotify',
-  passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private'], showDialog: true
-  }), (req, res) => {
-  })
-
-app.get('/callback',
-  passport.authenticate('spotify', { failureRedirect: '/' }),
-  (req, res) => {
-    res.redirect('/')
-  })
-
-app.get('/logout', (req, res) => {
-  req.logout()
-  res.redirect('/')
-})
-
-// access db auth from env
 const dbUsername = process.env.SPOTIFY_DB_USERNAME
 const dbPassword = process.env.SPOTIFY_DB_PASSWORD
 const MongoClient = require('mongodb').MongoClient

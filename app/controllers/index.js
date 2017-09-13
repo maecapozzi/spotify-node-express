@@ -1,18 +1,27 @@
-const authHelpers = require('../helpers/authentication')
 const cors = require('cors')
+const passport = require('passport')
+const request = require('request')
 const routes = require('express').Router()
 const search = require('../helpers/search')
 const trackAnalysis = require('./tracks/audioAnalysis')
-const querystring = require('querystring')
-const request = require('request')
 
-routes.get('/', (req, res) => {
-  res.render('index')
+routes.get('/auth/spotify',
+  passport.authenticate('spotify', {
+    scope: ['user-read-email', 'user-read-private'], showDialog: true
+  }), (req, res) => {})
+
+routes.get('/callback',
+  passport.authenticate('spotify', { failureRedirect: '/' }),
+  (req, res) => {
+    res.redirect('/')
+  })
+
+routes.get('/logout', (req, res) => {
+  req.logout()
+  res.redirect('/')
 })
 
 routes.get('/search', (req, res) => {
-  const expiresIn = localStorage.getItem('expires_in')
-  console.log(expiresIn)
   search.searchTracks(req, res)
 })
 
