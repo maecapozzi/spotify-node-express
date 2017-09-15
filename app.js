@@ -24,6 +24,8 @@ passport.use(new SpotifyStrategy({
   callbackURL: 'http://localhost:3000/callback'
 },
   (accessToken, refreshToken, profile, done) => {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
     localStorage.setItem('access_token', accessToken)
     localStorage.setItem('refresh_token', refreshToken)
 
