@@ -2,7 +2,8 @@ require('dotenv').config()
 
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const clientSecret = process.env.SPOTIFY_SECRET
-const controllers = require('./app/controllers')
+const search = require('./app/helpers/search')
+const trackAnalysis = require('./app/controllers/tracks/audioAnalysis')
 const cookieParser = require('cookie-parser')
 const express = require('express')
 const passport = require('passport')
@@ -36,10 +37,6 @@ passport.use(new SpotifyStrategy({
   }))
 
 const app = express()
-
-app.use('/', controllers)
-app.set('views', __dirname + '/app/views')
-app.set('view engine', 'pug')
 app.use(express.static(__dirname + '/public'))
   .use(cookieParser())
 app.use(passport.initialize())
@@ -60,7 +57,7 @@ app.get('/callback',
     res.redirect('http://localhost:3000')
   })
 
-app.get('/refresh_token', function (req, res) {
+app.get('/refreshToken', function (req, res) {
   var refresh_token = localStorage.getItem('refresh_token')
 
   var authOptions = {
@@ -76,13 +73,32 @@ app.get('/refresh_token', function (req, res) {
   }
 
   request.post(authOptions, function (error, response, body) {
-    console.log(refresh_token)
-    console.log(response.body.error)
     if (!error && response.statusCode === 200) {
-      var access_token = body.access_token
+      var accessToken = body.access_token
+      localStorage.setItem('access_token', accessToken)
       res.send({
-        'access_token': access_token
+        'access_token': accessToken
       })
+    }
+  })
+})
+
+app.get('/tokens', (req, res) => {
+  const accessToken = localStorage.getItem('access_token')
+
+  var authOptions = {
+    url: 'https://api.spotify.com/v1/me',
+    headers: {
+      'Authorization': 'Bearer ' + accessToken
+    },
+    json: true
+  }
+
+  request.get(authOptions, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      res.sendStatus(response.statusCode)
+    } else {
+      res.send(error)
     }
   })
 })
