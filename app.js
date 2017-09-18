@@ -41,6 +41,8 @@ app.use(express.static(__dirname + '/public'))
   .use(cookieParser())
 app.use(passport.initialize())
 app.use(passport.session())
+app.set('views', __dirname + '/app/views')
+app.set('view engine', 'pug')
 
 app.get('/', (req, res) => {
   res.render('index')
