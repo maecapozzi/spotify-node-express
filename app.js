@@ -56,7 +56,7 @@ app.get('/auth/spotify',
 app.get('/callback',
   passport.authenticate('spotify', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('http://spotify-viz-frontend.herokuapp.com/callback/')
+    res.redirect('http://spotify-viz-frontend.herokuapp.com')
   })
 
 app.get('/refreshToken', function (req, res) {
