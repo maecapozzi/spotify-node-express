@@ -40,7 +40,8 @@
     "standard": "^10.0.3"
   },
   "engines": {
-    "node": "6.11.1"
+    "node": "6.11.1",
+    "npm":"3.10.0"
   },
   "standard": {
     "ignore": [
