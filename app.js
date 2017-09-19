@@ -6,7 +6,7 @@ const search = require('./app/helpers/search')
 const trackAnalysis = require('./app/controllers/tracks/audioAnalysis')
 const cookieParser = require('cookie-parser')
 const express = require('express')
-const passport = require('./node_modules/passport')
+const passport = require('passport')
 let LocalStorage = require('node-localstorage').LocalStorage
 localStorage = new LocalStorage('./localStorage')
 const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
@@ -121,11 +121,12 @@ app.get('/analyze/:id', cors(), (req, res) => {
 const dbUsername = process.env.SPOTIFY_DB_USERNAME
 const dbPassword = process.env.SPOTIFY_DB_PASSWORD
 const MongoClient = require('mongodb').MongoClient
+const port = process.env.PORT || 3001
 
 MongoClient.connect('mongodb://' + dbUsername + ':' + dbPassword + '@ds121171.mlab.com:21171/spotify-node-express', (err) => {
   if (err) return console.log(err)
 
-  app.listen(3001, (err) => {
+  app.listen(port, (err) => {
     if (err) {
       console.log('something is broken')
     }
