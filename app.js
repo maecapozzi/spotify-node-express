@@ -21,11 +21,10 @@ passport.deserializeUser(function (obj, done) {
   done(null, obj)
 })
 
-const url = 'http://spotify-viz-api.herokuapp.com/'
 passport.use(new SpotifyStrategy({
   clientID: clientId,
   clientSecret: clientSecret,
-  callbackURL: url + '/callback'
+  callbackURL: 'http://spotify-viz-api.herokuapp.com/'
 },
   (accessToken, refreshToken, profile, done) => {
     console.log(accessToken)
