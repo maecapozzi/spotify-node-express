@@ -85,7 +85,7 @@ app.get('/refreshToken', function (req, res) {
   })
 })
 
-app.get('/tokens', (req, res) => {
+app.get('/tokens', cors(), (req, res) => {
   const accessToken = localStorage.getItem('access_token')
 
   var authOptions = {
