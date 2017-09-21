@@ -109,7 +109,7 @@ app.get('/logout', (req, res) => {
   req.logout()
   res.redirect('/')
 })
-app.get('/search', (req, res) => {
+app.get('/search', cors(), (req, res) => {
   search.searchTracks(req, res)
 })
 
