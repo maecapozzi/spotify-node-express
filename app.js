@@ -12,6 +12,8 @@ localStorage = new LocalStorage('./localStorage')
 const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
 const cors = require('cors')
 const request = require('request')
+const CALLBACK_URL = process.env.CALLBACK_URL || 'http://localhost:3001/callback'
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'
 
 passport.serializeUser(function (user, done) {
   done(null, user)
@@ -24,7 +26,7 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new SpotifyStrategy({
   clientID: clientId,
   clientSecret: clientSecret,
-  callbackURL: 'https://spotify-viz-api.herokuapp.com/callback/'
+  callbackURL: CALLBACK_URL
 },
   (accessToken, refreshToken, profile, done) => {
     console.log(accessToken)
@@ -56,7 +58,7 @@ app.get('/auth/spotify',
 app.get('/callback',
   passport.authenticate('spotify', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('https://spotify-viz-frontend.herokuapp.com')
+    res.redirect(FRONTEND_URL)
   })
 
 app.get('/refreshToken', function (req, res) {
