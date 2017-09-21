@@ -24,7 +24,7 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new SpotifyStrategy({
   clientID: clientId,
   clientSecret: clientSecret,
-  callbackURL: 'http://spotify-viz-api.herokuapp.com/callback/'
+  callbackURL: 'https://spotify-viz-api.herokuapp.com/callback/'
 },
   (accessToken, refreshToken, profile, done) => {
     console.log(accessToken)
@@ -56,7 +56,7 @@ app.get('/auth/spotify',
 app.get('/callback',
   passport.authenticate('spotify', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('http://spotify-viz-frontend.herokuapp.com')
+    res.redirect('https://spotify-viz-frontend.herokuapp.com')
   })
 
 app.get('/refreshToken', function (req, res) {
