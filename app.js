@@ -26,7 +26,7 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new SpotifyStrategy({
   clientID: clientId,
   clientSecret: clientSecret,
-  callbackURL: 'http://localhost:3001/callback'
+  callbackURL: CALLBACK_URL
 },
   (accessToken, refreshToken, profile, done) => {
     localStorage.setItem('access_token', accessToken)
@@ -57,7 +57,7 @@ app.get('/auth/spotify',
 app.get('/callback',
   passport.authenticate('spotify', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect('http://localhost:3000')
+    res.redirect(FRONTEND_URL)
   })
 
 app.get('/refreshToken', function (req, res) {
