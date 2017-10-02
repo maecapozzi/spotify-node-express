@@ -13,7 +13,7 @@ const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
 const cors = require('cors')
 const request = require('request')
 const CALLBACK_URL = 'https://spotify-viz-api.herokuapp.com/callback'
-const FRONTEND_URL = 'http://spotify-viz-frontend.herokuapp.com'
+const FRONTEND_URL = 'https://spotify-viz-frontend.herokuapp.com'
 
 passport.serializeUser(function (user, done) {
   done(null, user)
