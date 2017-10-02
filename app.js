@@ -12,8 +12,8 @@ localStorage = new LocalStorage('./localStorage')
 const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
 const cors = require('cors')
 const request = require('request')
-const CALLBACK_URL = process.env.CALLBACK_URL || 'https://spotify-viz-api.herokuapp.com/callback'
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://spotify-viz-frontend.herokuapp.com/'
+const CALLBACK_URL = 'https://spotify-viz-api.herokuapp.com/callback'
+const FRONTEND_URL = 'http://spotify-viz-frontend.herokuapp.com'
 
 passport.serializeUser(function (user, done) {
   done(null, user)
@@ -26,10 +26,9 @@ passport.deserializeUser(function (obj, done) {
 passport.use(new SpotifyStrategy({
   clientID: clientId,
   clientSecret: clientSecret,
-  callbackURL: CALLBACK_URL
+  callbackURL: 'http://localhost:3001/callback'
 },
   (accessToken, refreshToken, profile, done) => {
-    console.log(accessToken)
     localStorage.setItem('access_token', accessToken)
     localStorage.setItem('refresh_token', refreshToken)
 
@@ -58,7 +57,7 @@ app.get('/auth/spotify',
 app.get('/callback',
   passport.authenticate('spotify', { failureRedirect: '/' }),
   (req, res) => {
-    res.redirect(FRONTEND_URL)
+    res.redirect('http://localhost:3000')
   })
 
 app.get('/refreshToken', function (req, res) {
@@ -87,30 +86,30 @@ app.get('/refreshToken', function (req, res) {
   })
 })
 
-app.get('/tokens', cors(), (req, res) => {
-  const accessToken = localStorage.getItem('access_token')
+// app.get('/tokens', cors(), (req, res) => {
+//   const accessToken = localStorage.getItem('access_token')
+//   var authOptions = {
+//     url: 'https://api.spotify.com/v1/me',
+//     headers: {
+//       'Authorization': 'Bearer ' + accessToken
+//     },
+//     json: true
+//   }
 
-  var authOptions = {
-    url: 'https://api.spotify.com/v1/me',
-    headers: {
-      'Authorization': 'Bearer ' + accessToken
-    },
-    json: true
-  }
-
-  request.get(authOptions, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      res.sendStatus(response.statusCode)
-    } else {
-      res.send(error)
-    }
-  })
-})
+//   request.get(authOptions, (error, response, body) => {
+//     if (!error && response.statusCode === 200) {
+//       res.sendStatus(response.statusCode)
+//     } else {
+//       res.send(error)
+//     }
+//   })
+// })
 
 app.get('/logout', (req, res) => {
   req.logout()
   res.redirect('/')
 })
+
 app.get('/search', cors(), (req, res) => {
   search.searchTracks(req, res)
 })
