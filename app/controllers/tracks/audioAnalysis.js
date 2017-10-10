@@ -2,7 +2,7 @@ const request = require('request')
 
 module.exports = {
   analyzeTrack: function (req, res, id) {
-    const accessToken = localStorage.getItem('access_token')
+    const accessToken = localStorage.getItem('access_token_' + req.session.id)
     const options = {
       url: 'https://api.spotify.com/v1/audio-features/' + id,
       headers: { 'Authorization': 'Bearer ' + accessToken },

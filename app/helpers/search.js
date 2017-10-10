@@ -4,7 +4,8 @@ const request = require('request')
 
 module.exports = {
   searchTracks: (req, res) => {
-    const accessToken = localStorage.getItem('access_token')
+    const accessToken = localStorage.getItem('access_token_' + req.session.id)
+
     const options = {
       url: 'https://api.spotify.com/v1/search?q=' + req.query.track + '&type=track',
       headers: { 'Authorization': 'Bearer ' + accessToken },

@@ -5,6 +5,7 @@ const clientSecret = process.env.SPOTIFY_SECRET
 const search = require('./app/helpers/search')
 const trackAnalysis = require('./app/controllers/tracks/audioAnalysis')
 const cookieParser = require('cookie-parser')
+var cookieSession = require('cookie-session')
 const express = require('express')
 const passport = require('passport')
 let LocalStorage = require('node-localstorage').LocalStorage
@@ -12,8 +13,10 @@ localStorage = new LocalStorage('./localStorage')
 const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
 const cors = require('cors')
 const request = require('request')
-const CALLBACK_URL = 'https://spotify-viz-api.herokuapp.com/callback/'
-const FRONTEND_URL = 'https://spotify-viz-frontend.herokuapp.com'
+// const CALLBACK_URL = 'https://spotify-viz-api.herokuapp.com/callback/'
+// const FRONTEND_URL = 'https://spotify-viz-frontend.herokuapp.com'
+const CALLBACK_URL = 'http://localhost:3001/callback'
+const FRONTEND_URL = 'http://localhost:3000'
 
 passport.serializeUser(function (user, done) {
   done(null, user)
@@ -23,29 +26,33 @@ passport.deserializeUser(function (obj, done) {
   done(null, obj)
 })
 
+const app = express()
+app.use(express.static(__dirname + '/public'))
+  .use(cookieParser())
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(cookieSession({
+  name: 'session',
+  secret: 'keyboard_cat',
+  maxAge: 24 * 60 * 60 * 1000
+}))
+app.set('views', __dirname + '/app/views')
+app.set('view engine', 'pug')
+
 passport.use(new SpotifyStrategy({
   clientID: clientId,
   clientSecret: clientSecret,
   callbackURL: CALLBACK_URL
 },
   (accessToken, refreshToken, profile, done) => {
-    localStorage.setItem('access_token', accessToken)
-    localStorage.setItem('refresh_token', refreshToken)
-
     process.nextTick(function () {
-      return done(null, profile)
+      let user = { profile: profile, access_token: accessToken, refresh_token: refreshToken }
+      return done(null, user)
     })
   }))
 
-const app = express()
-app.use(express.static(__dirname + '/public'))
-  .use(cookieParser())
-app.use(passport.initialize())
-app.use(passport.session())
-app.set('views', __dirname + '/app/views')
-app.set('view engine', 'pug')
-
 app.get('/', (req, res) => {
+  console.log('rendering')
   res.render('index')
 })
 
@@ -54,11 +61,17 @@ app.get('/auth/spotify',
     scope: ['user-read-email', 'user-read-private'], showDialog: true
   }), (req, res) => {})
 
-app.get('/callback',
-  passport.authenticate('spotify', { failureRedirect: '/' }),
-  (req, res) => {
-    res.redirect(FRONTEND_URL)
-  })
+app.get('/callback', passport.authenticate('spotify', { failureRedirect: '/' }), (req, res) => {
+  // console.log(req.user)
+
+  console.log('--- writing to session:')
+  console.log(req)
+  localStorage.setItem('access_token_' + req.session.id, req.user.access_token)
+  localStorage.setItem('refresh_token_' + req.session.id, req.user.refresh_token)
+  // console.log(req.session.id)
+
+  res.redirect(FRONTEND_URL)
+})
 
 app.get('/refreshToken', function (req, res) {
   var refresh_token = localStorage.getItem('refresh_token')
@@ -86,24 +99,39 @@ app.get('/refreshToken', function (req, res) {
   })
 })
 
-// app.get('/tokens', cors(), (req, res) => {
-//   const accessToken = localStorage.getItem('access_token')
-//   var authOptions = {
-//     url: 'https://api.spotify.com/v1/me',
-//     headers: {
-//       'Authorization': 'Bearer ' + accessToken
-//     },
-//     json: true
-//   }
+app.get('/tokens', cors(), (req, res) => {
+  const accessToken = localStorage.getItem('access_token_' + req.session.id)
 
-//   request.get(authOptions, (error, response, body) => {
-//     if (!error && response.statusCode === 200) {
-//       res.sendStatus(response.statusCode)
-//     } else {
-//       res.send(error)
-//     }
-//   })
-// })
+  var authOptions = {
+    url: 'https://api.spotify.com/v1/me',
+    headers: {
+      'Authorization': 'Bearer ' + accessToken
+    },
+    json: true
+  }
+
+  if (!req.session.views) {
+    req.session.views = 0
+  }
+
+  req.session.views++
+  console.log(req.session.views)
+
+  // req.session.last_time = 'omg'
+  // req.session.save()
+
+  console.log('trying to request:')
+  console.log('reading from session: ' + req.session)
+  console.log(authOptions)
+
+  request.get(authOptions, (error, response, body) => {
+    if (!error && response.statusCode === 200) {
+      res.sendStatus(response.statusCode)
+    } else {
+      res.send(error)
+    }
+  })
+})
 
 app.get('/logout', (req, res) => {
   req.logout()
