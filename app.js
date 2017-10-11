@@ -58,14 +58,15 @@ app.get('/', (req, res) => {
 
 app.get('/auth/spotify',
   passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private'], showDialog: true
+    scope: ['user-read-email', 'user-read-private']
   }), (req, res) => {})
 
 app.get('/callback', passport.authenticate('spotify', { failureRedirect: '/' }), (req, res) => {
   // console.log(req.user)
 
   console.log('--- writing to session:')
-  console.log(req)
+  req.session.id = req.user.profile.id
+  console.log(req.session.id)
   localStorage.setItem('access_token_' + req.session.id, req.user.access_token)
   localStorage.setItem('refresh_token_' + req.session.id, req.user.refresh_token)
   // console.log(req.session.id)
@@ -121,7 +122,7 @@ app.get('/tokens', cors(), (req, res) => {
   // req.session.save()
 
   console.log('trying to request:')
-  console.log('reading from session: ' + req.session)
+  console.log('reading from session: ' + req.session.id)
   console.log(authOptions)
 
   request.get(authOptions, (error, response, body) => {
