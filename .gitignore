@@ -3,3 +3,4 @@
 node_modules/*
 localStorage/*
 .eslintrc.js
+npm-debug.log
