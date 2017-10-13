@@ -39,6 +39,12 @@ app.use(cookieSession({
 app.set('views', __dirname + '/app/views')
 app.set('view engine', 'pug')
 
+let stateKey = 'spotify_auth_state'
+
+app.get('/', (req, res) => {
+  res.render('index')
+})
+
 passport.use(new SpotifyStrategy({
   clientID: clientId,
   clientSecret: clientSecret,
@@ -46,15 +52,10 @@ passport.use(new SpotifyStrategy({
 },
   (accessToken, refreshToken, profile, done) => {
     process.nextTick(function () {
-      let user = { profile: profile, access_token: accessToken, refresh_token: refreshToken }
+      let user = { spotifyId: profile.id, access_token: accessToken, refresh_token: refreshToken }
       return done(null, user)
     })
   }))
-
-app.get('/', (req, res) => {
-  console.log('rendering')
-  res.render('index')
-})
 
 app.get('/auth/spotify',
   passport.authenticate('spotify', {
@@ -62,14 +63,9 @@ app.get('/auth/spotify',
   }), (req, res) => {})
 
 app.get('/callback', passport.authenticate('spotify', { failureRedirect: '/' }), (req, res) => {
-  // console.log(req.user)
-
-  console.log('--- writing to session:')
-  req.session.id = req.user.profile.id
-  console.log(req.session.id)
+  req.session.id = req.user.spotifyId
   localStorage.setItem('access_token_' + req.session.id, req.user.access_token)
   localStorage.setItem('refresh_token_' + req.session.id, req.user.refresh_token)
-  // console.log(req.session.id)
 
   res.redirect(FRONTEND_URL)
 })
@@ -116,14 +112,6 @@ app.get('/tokens', cors(), (req, res) => {
   }
 
   req.session.views++
-  console.log(req.session.views)
-
-  // req.session.last_time = 'omg'
-  // req.session.save()
-
-  console.log('trying to request:')
-  console.log('reading from session: ' + req.session.id)
-  console.log(authOptions)
 
   request.get(authOptions, (error, response, body) => {
     if (!error && response.statusCode === 200) {
