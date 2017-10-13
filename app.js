@@ -41,8 +41,13 @@ app.set('view engine', 'pug')
 
 let stateKey = 'spotify_auth_state'
 
-app.get('/', (req, res) => {
-  res.render('index')
+app.get('/', cors(), (req, res) => {
+  console.log(req.session.id)
+  if (req.session.id === undefined) {
+    res.sendStatus(401)
+  } else {
+    res.sendStatus(200)
+  }
 })
 
 passport.use(new SpotifyStrategy({
@@ -92,32 +97,6 @@ app.get('/refreshToken', function (req, res) {
       res.send({
         'access_token': accessToken
       })
-    }
-  })
-})
-
-app.get('/tokens', cors(), (req, res) => {
-  const accessToken = localStorage.getItem('access_token_' + req.session.id)
-
-  var authOptions = {
-    url: 'https://api.spotify.com/v1/me',
-    headers: {
-      'Authorization': 'Bearer ' + accessToken
-    },
-    json: true
-  }
-
-  if (!req.session.views) {
-    req.session.views = 0
-  }
-
-  req.session.views++
-
-  request.get(authOptions, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      res.sendStatus(response.statusCode)
-    } else {
-      res.send(error)
     }
   })
 })
