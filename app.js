@@ -19,7 +19,7 @@ const FRONTEND_URL = 'https://spotify-viz-frontend.herokuapp.com'
 // const FRONTEND_URL = 'http://localhost:3000'
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: FRONTEND_URL,
   credentials: true
 }
 
