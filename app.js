@@ -5,7 +5,7 @@ const clientSecret = process.env.SPOTIFY_SECRET
 const search = require('./app/helpers/search')
 const trackAnalysis = require('./app/controllers/tracks/audioAnalysis')
 const cookieParser = require('cookie-parser')
-var cookieSession = require('cookie-session')
+var session = require('express-session')
 const express = require('express')
 const passport = require('passport')
 let LocalStorage = require('node-localstorage').LocalStorage
@@ -18,6 +18,11 @@ const request = require('request')
 const CALLBACK_URL = 'http://localhost:3001/callback'
 const FRONTEND_URL = 'http://localhost:3000'
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+}
+
 passport.serializeUser(function (user, done) {
   done(null, user)
 })
@@ -28,26 +33,23 @@ passport.deserializeUser(function (obj, done) {
 
 const app = express()
 app.use(express.static(__dirname + '/public'))
-  .use(cookieParser())
+  .use(cookieParser('keyboard_cat'))
+
+app.use(session({
+  key: 'user_sid',
+  secret: 'keyboard_cat',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { expires: 60000 * 60 * 24, secure: false, httpOnly: false }
+
+}))
+
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(cookieSession({
-  name: 'session',
-  secret: 'keyboard_cat',
-  maxAge: 24 * 60 * 60 * 1000
-}))
+
 app.set('views', __dirname + '/app/views')
 app.set('view engine', 'pug')
 app.set('trust proxy', 1)
-
-app.get('/', cors(), (req, res) => {
-  console.log(req.session.id)
-  if (req.session.id != null) {
-    res.json({isAuthenticated: true })
-  } else {
-    res.json({isAuthenticated: false, message: 'Please log in.' })
-  }
-})
 
 passport.use(new SpotifyStrategy({
   clientID: clientId,
@@ -67,10 +69,20 @@ app.get('/auth/spotify',
   })
 
 app.get('/callback', passport.authenticate('spotify', { failureRedirect: '/' }), (req, res) => {
-  req.session.id = req.user.spotifyId
+  console.log('--------logging user', req.user.access_token)
+  console.log('--------logging session id', req.session.id)
   localStorage.setItem('access_token_' + req.session.id, req.user.access_token)
   localStorage.setItem('refresh_token_' + req.session.id, req.user.refresh_token)
   res.redirect(FRONTEND_URL)
+})
+
+app.get('/', cors(corsOptions), (req, res) => {
+  console.log('---------loggin session id /', req.session.id)
+  if (req.isAuthenticated()) {
+    res.json({isAuthenticated: true })
+  } else {
+    res.json({isAuthenticated: false})
+  }
 })
 
 app.get('/refreshToken', function (req, res) {
@@ -100,17 +112,17 @@ app.get('/refreshToken', function (req, res) {
 })
 
 app.get('/logout', (req, res) => {
-  req.session = null
-  req.logout()
+  req.session.destroy()
   res.redirect('/')
 })
 
-app.get('/search', cors(), (req, res) => {
+app.get('/search', cors(corsOptions), (req, res) => {
   search.searchTracks(req, res)
 })
 
-app.get('/analyze/:id', cors(), (req, res) => {
+app.get('/analyze/:id', cors(corsOptions), (req, res) => {
   const id = req.params.id
+  console.log('checking session id in analyze', req.session.id)
   trackAnalysis.analyzeTrack(req, res, id)
 })
 
