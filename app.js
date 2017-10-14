@@ -38,15 +38,14 @@ app.use(cookieSession({
 }))
 app.set('views', __dirname + '/app/views')
 app.set('view engine', 'pug')
-
-let stateKey = 'spotify_auth_state'
+app.set('trust proxy', 1)
 
 app.get('/', cors(), (req, res) => {
   console.log(req.session.id)
-  if (req.session.id === undefined) {
-    res.sendStatus(401)
+  if (req.session.id != null) {
+    res.json({isAuthenticated: true })
   } else {
-    res.sendStatus(200)
+    res.json({isAuthenticated: false, message: 'Please log in.' })
   }
 })
 
@@ -63,15 +62,14 @@ passport.use(new SpotifyStrategy({
   }))
 
 app.get('/auth/spotify',
-  passport.authenticate('spotify', {
-    scope: ['user-read-email', 'user-read-private']
-  }), (req, res) => {})
+  passport.authenticate('spotify', {scope: ['user-read-email', 'user-read-private'], showDialog: true}),
+  (req, res) => {
+  })
 
 app.get('/callback', passport.authenticate('spotify', { failureRedirect: '/' }), (req, res) => {
   req.session.id = req.user.spotifyId
   localStorage.setItem('access_token_' + req.session.id, req.user.access_token)
   localStorage.setItem('refresh_token_' + req.session.id, req.user.refresh_token)
-
   res.redirect(FRONTEND_URL)
 })
 
@@ -102,6 +100,7 @@ app.get('/refreshToken', function (req, res) {
 })
 
 app.get('/logout', (req, res) => {
+  req.session = null
   req.logout()
   res.redirect('/')
 })
