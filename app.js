@@ -69,15 +69,12 @@ app.get('/auth/spotify',
   })
 
 app.get('/callback', passport.authenticate('spotify', { failureRedirect: '/' }), (req, res) => {
-  console.log('--------logging user', req.user.access_token)
-  console.log('--------logging session id', req.session.id)
   localStorage.setItem('access_token_' + req.session.id, req.user.access_token)
   localStorage.setItem('refresh_token_' + req.session.id, req.user.refresh_token)
   res.redirect(FRONTEND_URL)
 })
 
 app.get('/', cors(corsOptions), (req, res) => {
-  console.log('---------loggin session id /', req.session.id)
   if (req.isAuthenticated()) {
     res.json({isAuthenticated: true })
   } else {
@@ -122,7 +119,6 @@ app.get('/search', cors(corsOptions), (req, res) => {
 
 app.get('/analyze/:id', cors(corsOptions), (req, res) => {
   const id = req.params.id
-  console.log('checking session id in analyze', req.session.id)
   trackAnalysis.analyzeTrack(req, res, id)
 })
 
