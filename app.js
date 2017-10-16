@@ -2,17 +2,18 @@ require('dotenv').config()
 
 const clientId = process.env.SPOTIFY_CLIENT_ID
 const clientSecret = process.env.SPOTIFY_SECRET
-const search = require('./app/helpers/search')
-const trackAnalysis = require('./app/controllers/tracks/audioAnalysis')
 const cookieParser = require('cookie-parser')
-var session = require('express-session')
+const cors = require('cors')
 const express = require('express')
-const passport = require('passport')
 let LocalStorage = require('node-localstorage').LocalStorage
 localStorage = new LocalStorage('./localStorage')
+const passport = require('passport')
+const search = require('./app/helpers/search')
+var session = require('express-session')
 const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
-const cors = require('cors')
+const trackAnalysis = require('./app/helpers/audioAnalysis')
 const request = require('request')
+
 const CALLBACK_URL = 'https://spotify-viz-api.herokuapp.com/callback/'
 const FRONTEND_URL = 'https://spotify-viz-frontend.herokuapp.com'
 // const CALLBACK_URL = 'http://localhost:3001/callback'
@@ -23,11 +24,11 @@ const corsOptions = {
   credentials: true
 }
 
-passport.serializeUser(function (user, done) {
+passport.serializeUser((user, done) => {
   done(null, user)
 })
 
-passport.deserializeUser(function (obj, done) {
+passport.deserializeUser((obj, done) => {
   done(null, obj)
 })
 
@@ -46,9 +47,6 @@ app.use(session({
 
 app.use(passport.initialize())
 app.use(passport.session())
-
-app.set('views', __dirname + '/app/views')
-app.set('view engine', 'pug')
 app.set('trust proxy', 1)
 
 passport.use(new SpotifyStrategy({
@@ -57,7 +55,7 @@ passport.use(new SpotifyStrategy({
   callbackURL: CALLBACK_URL
 },
   (accessToken, refreshToken, profile, done) => {
-    process.nextTick(function () {
+    process.nextTick(() => {
       let user = { spotifyId: profile.id, access_token: accessToken, refresh_token: refreshToken }
       return done(null, user)
     })
@@ -82,7 +80,7 @@ app.get('/', cors(corsOptions), (req, res) => {
   }
 })
 
-app.get('/refreshToken', function (req, res) {
+app.get('/refreshToken', (req, res) => {
   var refresh_token = localStorage.getItem('refresh_token')
 
   var authOptions = {
@@ -97,7 +95,7 @@ app.get('/refreshToken', function (req, res) {
     json: true
   }
 
-  request.post(authOptions, function (error, response, body) {
+  request.post(authOptions, (error, response, body) => {
     if (!error && response.statusCode === 200) {
       var accessToken = body.access_token
       localStorage.setItem('access_token', accessToken)

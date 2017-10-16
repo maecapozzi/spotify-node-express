@@ -39,6 +39,8 @@
     "eslint-plugin-react": "^7.3.0",
     "nodemon": "^1.12.1",
     "standard": "^10.0.3",
+    "superagent": "^3.6.3",
+    "supertest": "^3.0.0",
     "webpack": "^3.6.0"
   },
   "engines": {
