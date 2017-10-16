@@ -69,6 +69,7 @@ app.get('/auth/spotify',
 app.get('/callback', passport.authenticate('spotify', { failureRedirect: '/' }), (req, res) => {
   localStorage.setItem('access_token_' + req.session.id, req.user.access_token)
   localStorage.setItem('refresh_token_' + req.session.id, req.user.refresh_token)
+  console.log(res)
   res.redirect(FRONTEND_URL)
 })
 
