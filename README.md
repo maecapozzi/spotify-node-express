@@ -7,4 +7,4 @@ https://spotify-viz-frontend.herokuapp.com/
 1. Clone the repo
 2. `npm install`
 3. Create a `.env` with the secret keys.
-4. `npm start`
+4. `npm run dev`
