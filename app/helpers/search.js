@@ -1,7 +1,5 @@
 const request = require('request')
 
-// TODO: use bodyParser instead of JSON.parse
-
 module.exports = {
   searchTracks: (req, res, sessionId) => {
     const accessToken = localStorage.getItem('access_token_' + req.session.id)
