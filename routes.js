@@ -13,8 +13,11 @@ const routes = require('express').Router()
 
 // const CALLBACK_URL = 'http://localhost:3001/callback'
 // const FRONTEND_URL = 'http://localhost:3000'
+// const CALLBACK_URL = 'https://spotify-viz-api.herokuapp.com/callback/'
+// const FRONTEND_URL = 'https://spotify-viz-frontend.herokuapp.com'
+
 const CALLBACK_URL = 'https://spotify-viz-api.herokuapp.com/callback/'
-const FRONTEND_URL = 'https://spotify-viz-frontend.herokuapp.com'
+const FRONTEND_URL = 'https://www.ear-worm.com'
 
 const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
 
