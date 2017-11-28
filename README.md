@@ -1,6 +1,6 @@
 # spotify-node-express
 
-https://spotify-viz-frontend.herokuapp.com/
+https://www.ear-worm.com
 
 ## To run this app locally:
 
