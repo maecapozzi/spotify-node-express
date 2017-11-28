@@ -1,23 +1,19 @@
 const cors = require('cors')
-const passport = require('passport')
-const clientId = process.env.SPOTIFY_CLIENT_ID
-const clientSecret = process.env.SPOTIFY_SECRET
-var session = require('express-session')
 let LocalStorage = require('node-localstorage').LocalStorage
 localStorage = new LocalStorage('./localStorage')
+const passport = require('passport')
+var session = require('express-session')
 const search = require('./app/helpers/search')
+const store = require('./store')
 const trackAnalysis = require('./app/helpers/audioAnalysis')
 const request = require('request')
-
 const routes = require('express').Router()
 
-// Development
-// const CALLBACK_URL = 'http://localhost:3001/callback'
-// const FRONTEND_URL = 'http://localhost:3000'
+const clientId = process.env.SPOTIFY_CLIENT_ID
+const clientSecret = process.env.SPOTIFY_SECRET
 
-// Production
-const CALLBACK_URL = 'https://spotify-viz-api.herokuapp.com/callback/'
-const FRONTEND_URL = 'https://www.ear-worm.com'
+const CALLBACK_URL = process.env.CALLBACK_URL || 'http://localhost:3001/callback'
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'
 
 const SpotifyStrategy = require('./lib/passport-spotify/index').Strategy
 
@@ -54,6 +50,8 @@ passport.use(new SpotifyStrategy({
   (accessToken, refreshToken, profile, done) => {
     process.nextTick(() => {
       let user = { spotifyId: profile.id, access_token: accessToken, refresh_token: refreshToken }
+      const spotifyId = profile.id
+      store.findOrCreateUser(spotifyId, accessToken, refreshToken)
       return done(null, user)
     })
   }))
@@ -64,6 +62,9 @@ routes.get('/auth/spotify',
   })
 
 routes.get('/callback', passport.authenticate('spotify', { failureRedirect: '/' }), (req, res) => {
+  const sessionId = req.session.id
+  const spotifyId = req.user.spotifyId
+  store.setSessionId(spotifyId, sessionId)
   localStorage.setItem('access_token_' + req.session.id, req.user.access_token)
   localStorage.setItem('refresh_token_' + req.session.id, req.user.refresh_token)
   res.redirect(FRONTEND_URL)
