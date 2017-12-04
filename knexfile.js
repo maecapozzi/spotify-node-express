@@ -13,10 +13,10 @@ module.exports = {
   production: {
     client: 'mysql',
     connection: {
+      host: "https://spotify-viz-api.herokuapp.com",
       user: process.env.DEV_DB_USER,
       password: process.env.DEV_DB_PASSWORD,
-      database: 'earworm_production',
-      socketPath: '/var/run/mysqld/mysqld.sock'
+      database: 'earworm_production'
     }
   }
 }
