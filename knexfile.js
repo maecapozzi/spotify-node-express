@@ -15,7 +15,8 @@ module.exports = {
     connection: {
       user: process.env.DEV_DB_USER,
       password: process.env.DEV_DB_PASSWORD,
-      database: 'earworm_production'
+      database: 'earworm_production',
+      socketPath: '/var/run/mysqld/mysqld.sock'
     }
   }
 }
