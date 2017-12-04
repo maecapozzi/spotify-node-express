@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').load();
 }
 
-const PORT = 'https://spotify-viz-api.herokuapp.com'
+const PORT = 'https://spotify-viz-api.herokuapp.com/'
 
 const cookieParser = require('cookie-parser')
 const routes = require('./routes')
