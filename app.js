@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').load();
 }
 
-const PORT = 'https://spotify-viz-api.herokuapp.com/'
+const PORT = process.env.PORT || 3001
 
 const cookieParser = require('cookie-parser')
 const routes = require('./routes')
@@ -20,7 +20,7 @@ app.use(express.static('public'))
 app.use(bodyParser.json())
 app.set('trust proxy', 1)
 
-app.listen(PORT, () => { 
+app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`)
 })
 
