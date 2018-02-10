@@ -6,7 +6,8 @@
   "scripts": {
     "test": "NODE_ENV=development mocha",
     "dev": "NODE_ENV=development nodemon app.js",
-    "start": "NODE_ENV=production node app.js"
+    "start": "NODE_ENV=production node app.js",
+    "precommit": "lint-staged"
   },
   "author": "",
   "license": "ISC",
@@ -33,7 +34,6 @@
     "qs": "^6.5.0",
     "readable-stream": "^2.3.3",
     "request": "^2.81.0",
-
     "string_decoder": "^1.0.3"
   },
   "devDependencies": {
@@ -44,7 +44,10 @@
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^5.1.1",
     "eslint-plugin-react": "^7.3.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^6.1.0",
     "nodemon": "^1.12.1",
+    "prettier-standard": "^8.0.0",
     "standard": "^10.0.3",
     "superagent": "^3.6.3",
     "supertest": "^3.0.0",
@@ -54,9 +57,10 @@
     "node": "6.11.1",
     "npm": "3.10.0"
   },
-  "standard": {
-    "ignore": [
-      "/lib/*"
+  "lint-staged": {
+    "*.js": [
+      "prettier-standard",
+      "git add"
     ]
   }
 }
