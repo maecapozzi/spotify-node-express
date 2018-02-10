@@ -2,7 +2,6 @@ const request = require('request')
 
 module.exports = {
   searchTracks: (req, res) => {
-    console.log(req.session)
     const accessToken = localStorage.getItem('access_token_' + req.session.id)
 
     const options = {
